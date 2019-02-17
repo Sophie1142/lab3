@@ -59,7 +59,7 @@ point_recd and returning a point _rec as well.
 ......................................................................*)
 
 let add_point_recd (p1: point_recd) (p2: point_recd) : point_recd =
-  {x = (p1.x + p1.y); y = (p2.x + p2.y)} ;;
+  {x = p1.x + p2.x; y = p2.y + p2.y} ;;
 
 (* Recall the dot product from Lab 2. The dot product of two points
 (x1, y1) and (x2, y2) is the sum of the products of their x and y
@@ -155,7 +155,7 @@ For example:
 let transcript (enrollments : enrollment list)
                (student : int)
              : enrollment list =
-  List.filter (fun one_student -> one_student.id = student) college ;;
+  List.filter (fun one_student -> one_student.id = student) enrollments ;;
   
 (*......................................................................
 Exercise 8: Define a function called ids that takes an enrollment
@@ -170,8 +170,10 @@ For example:
 ......................................................................*)
 
 let ids (enrollments: enrollment list) : int list =
-  List.sort_uniq (compare) (List.map (fun student -> student.id) enrollments) ;;
-  (* So compare is just always the first argument of List.sort_uniq. Second argument
+  List.sort_uniq (compare) 
+                 (List.map (fun student -> student.id) enrollments) ;;
+  
+(* So compare is just always the first argument of List.sort_uniq. Second argument
   is the list it's sorting. So first we need to pull at the IDs, and we can do that by 
   implementing an anonymous function that, using the map function on enrollments,
   selects the value of student id *)
@@ -189,15 +191,18 @@ For example:
 let names (enrollments: enrollment list) : string list =
   List.sort_uniq (compare)
                   (List.map (fun { name; _ } -> name) enrollments) ;;
+
 (* So line 191 is the second argument of sort-_uniq, which is the list to be
 sorted uniquely. To get that list, we apply a function that pulls the name from 
-the enrollment list *)                 
+the enrollment list *) 
+
 let verify (enrollments : enrollment list) : bool =
   List.for_all (fun l -> List.length l = 1)
                (List.map 
-                  (fun student -> names (transcript enrollments student)) (* I'm particularly confused about this line: what does this fun do? *)
+                  (fun student -> names (transcript enrollments student)) (* I'm particularly confused about this line: what does this func do? *)
                   (ids enrollments)) ;;
-(* My understanding thus far: 
+
+                  (* My understanding thus far: 
 The predicate in our for_all function call is that the length of argument l = 1
 And we're applying that on a LIST we get by mapping an (anonymous) function that calls 
 the function 'names' on (transcript enrollments student) onto the list procured from 
